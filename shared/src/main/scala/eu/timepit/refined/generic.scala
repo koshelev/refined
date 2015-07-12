@@ -22,10 +22,10 @@ private[refined] trait GenericPredicates {
     Predicate.instance(_ == wu.value, t => s"($t == ${wu.value})")
 
   implicit def subtypePredicate[T, U >: T]: Predicate[Subtype[U], T] =
-    Predicate.alwaysValid
+    ConstPredicate.valid
 
   implicit def supertypePredicate[T, U <: T]: Predicate[Supertype[U], T] =
-    Predicate.alwaysValid
+    ConstPredicate.valid
 }
 
 private[refined] trait GenericInferenceRules {

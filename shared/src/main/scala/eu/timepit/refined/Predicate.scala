@@ -67,10 +67,10 @@ object Predicate {
   def apply[P, T](implicit p: Predicate[P, T]): Predicate[P, T] = p
 
   /** Constructs a [[Predicate]] from its parameters. */
-  def instance[P, T](validateT: T => Boolean, showT: T => String): Predicate[P, T] =
+  def instance[P, T](isValidF: T => Boolean, showF: T => String): Predicate[P, T] =
     new Predicate[P, T] {
-      def isValid(t: T): Boolean = validateT(t)
-      def show(t: T): String = showT(t)
+      def isValid(t: T): Boolean = isValidF(t)
+      def show(t: T): String = showF(t)
     }
 
   /**
@@ -88,12 +88,33 @@ object Predicate {
           case Failure(ex) => Some(s"Predicate ${show(t)} failed: ${ex.getMessage}")
         }
     }
+}
 
-  /** Returns a [[Predicate]] that ignores its inputs and always yields `true`. */
-  def alwaysValid[P, T]: Predicate[P, T] =
-    instance(_ => true, _ => "true")
+trait ConstPredicate[P, T] extends Predicate[P, T] {
 
-  /** Returns a [[Predicate]] that ignores its inputs and always yields `false`. */
-  def alwaysInvalid[P, T]: Predicate[P, T] =
-    instance(_ => false, _ => "false")
+  def constIsValid: Boolean
+
+  def constShow: String
+
+  def constValidate: Option[String] =
+    if (constIsValid) None else Some(s"Predicate failed: $constShow.")
+
+  override def isValid(t: T): Boolean = constIsValid
+
+  override def show(t: T): String = constShow
+}
+
+object ConstPredicate {
+
+  def instance[P, T](isValidV: Boolean, showV: String): ConstPredicate[P, T] =
+    new ConstPredicate[P, T] {
+      override val constIsValid: Boolean = isValidV
+      override val constShow: String = showV
+    }
+
+  def valid[P, T]: ConstPredicate[P, T] =
+    instance(isValidV = true, "true")
+
+  def invalid[P, T]: ConstPredicate[P, T] =
+    instance(isValidV = false, "false")
 }

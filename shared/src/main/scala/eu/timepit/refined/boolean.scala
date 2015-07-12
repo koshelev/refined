@@ -37,10 +37,10 @@ object boolean extends BooleanPredicates with BooleanInferenceRules0 {
 private[refined] trait BooleanPredicates {
 
   implicit def truePredicate[T]: Predicate[True, T] =
-    Predicate.alwaysValid
+    ConstPredicate.valid
 
   implicit def falsePredicate[T]: Predicate[False, T] =
-    Predicate.alwaysInvalid
+    ConstPredicate.invalid
 
   implicit def notPredicate[P, T](implicit p: Predicate[P, T]): Predicate[Not[P], T] =
     new Predicate[Not[P], T] {
@@ -100,7 +100,7 @@ private[refined] trait BooleanPredicates {
     }
 
   implicit def allOfHNilPredicate[T]: Predicate[AllOf[HNil], T] =
-    Predicate.alwaysValid
+    ConstPredicate.valid
 
   implicit def allOfHConsPredicate[PH, PT <: HList, T](implicit ph: Predicate[PH, T], pt: Predicate[AllOf[PT], T]): Predicate[AllOf[PH :: PT], T] =
     Predicate.instance(
@@ -108,7 +108,7 @@ private[refined] trait BooleanPredicates {
       t => s"(${ph.show(t)} && ${pt.show(t)})")
 
   implicit def anyOfHNilPredicate[T]: Predicate[AnyOf[HNil], T] =
-    Predicate.alwaysInvalid
+    ConstPredicate.invalid
 
   implicit def anyOfHConsPredicate[PH, PT <: HList, T](implicit ph: Predicate[PH, T], pt: Predicate[AnyOf[PT], T]): Predicate[AnyOf[PH :: PT], T] =
     Predicate.instance(
@@ -116,7 +116,7 @@ private[refined] trait BooleanPredicates {
       t => s"(${ph.show(t)} || ${pt.show(t)})")
 
   implicit def oneOfHNilPredicate[T]: Predicate[OneOf[HNil], T] =
-    Predicate.alwaysInvalid
+    ConstPredicate.invalid
 
   implicit def oneOfHConsPredicate[PH, PT <: HList, T](implicit ph: Predicate[PH, T], pt: Predicate[OneOf[PT], T]): Predicate[OneOf[PH :: PT], T] =
     new Predicate[OneOf[PH :: PT], T] {

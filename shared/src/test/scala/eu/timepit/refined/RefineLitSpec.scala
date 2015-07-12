@@ -62,7 +62,8 @@ class RefineLitSpec extends Properties("refineLit") {
   }
 
   property("refineLit fails on non-literals") = secure {
-    illTyped("refineLit[NonEmpty](List(1, 2, 3))", "refineLit only supports literals.*")
+    illTyped("refineLit[NonEmpty](List(1, 2, 3))",
+      "compile-time refinement only works with literals or constant predicates.*")
     true
   }
 }
