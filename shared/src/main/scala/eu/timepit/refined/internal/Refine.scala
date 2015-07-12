@@ -8,6 +8,6 @@ import shapeless.tag.@@
  * `[[refine]][P](t)`.
  */
 final class Refine[P] {
-  def apply[T](t: T)(implicit p: Predicate[P, T]): Either[String, T @@ P] =
+  def apply[T](t: T)(implicit p: Predicate1[P, T]): Either[String, T @@ P] =
     p.refine(t)
 }

@@ -36,14 +36,14 @@ object boolean extends BooleanPredicates with BooleanInferenceRules0 {
 
 private[refined] trait BooleanPredicates {
 
-  implicit def truePredicate[T]: Predicate[True, T] =
-    Predicate.alwaysValid
+  implicit def truePredicate[T]: Predicate0[True, T] =
+    Predicate0.alwaysValid
 
-  implicit def falsePredicate[T]: Predicate[False, T] =
-    Predicate.alwaysInvalid
+  implicit def falsePredicate[T]: Predicate0[False, T] =
+    Predicate0.alwaysInvalid
 
-  implicit def notPredicate[P, T](implicit p: Predicate[P, T]): Predicate[Not[P], T] =
-    new Predicate[Not[P], T] {
+  implicit def notPredicate[P, T](implicit p: Predicate1[P, T]): Predicate1[Not[P], T] =
+    new Predicate1[Not[P], T] {
       def isValid(t: T): Boolean = !p.isValid(t)
       def show(t: T): String = s"!${p.show(t)}"
 
@@ -54,8 +54,8 @@ private[refined] trait BooleanPredicates {
         }
     }
 
-  implicit def andPredicate[A, B, T](implicit pa: Predicate[A, T], pb: Predicate[B, T]): Predicate[A And B, T] =
-    new Predicate[A And B, T] {
+  implicit def andPredicate[A, B, T](implicit pa: Predicate1[A, T], pb: Predicate1[B, T]): Predicate1[A And B, T] =
+    new Predicate1[A And B, T] {
       def isValid(t: T): Boolean = pa.isValid(t) && pb.isValid(t)
       def show(t: T): String = s"(${pa.show(t)} && ${pb.show(t)})"
 
@@ -71,8 +71,8 @@ private[refined] trait BooleanPredicates {
         }
     }
 
-  implicit def orPredicate[A, B, T](implicit pa: Predicate[A, T], pb: Predicate[B, T]): Predicate[A Or B, T] =
-    new Predicate[A Or B, T] {
+  implicit def orPredicate[A, B, T](implicit pa: Predicate1[A, T], pb: Predicate1[B, T]): Predicate1[A Or B, T] =
+    new Predicate1[A Or B, T] {
       def isValid(t: T): Boolean = pa.isValid(t) || pb.isValid(t)
       def show(t: T): String = s"(${pa.show(t)} || ${pb.show(t)})"
 
@@ -84,8 +84,8 @@ private[refined] trait BooleanPredicates {
         }
     }
 
-  implicit def xorPredicate[A, B, T](implicit pa: Predicate[A, T], pb: Predicate[B, T]): Predicate[A Xor B, T] =
-    new Predicate[A Xor B, T] {
+  implicit def xorPredicate[A, B, T](implicit pa: Predicate1[A, T], pb: Predicate1[B, T]): Predicate1[A Xor B, T] =
+    new Predicate1[A Xor B, T] {
       def isValid(t: T): Boolean = pa.isValid(t) ^ pb.isValid(t)
       def show(t: T): String = s"(${pa.show(t)} ^ ${pb.show(t)})"
 
@@ -99,27 +99,27 @@ private[refined] trait BooleanPredicates {
         }
     }
 
-  implicit def allOfHNilPredicate[T]: Predicate[AllOf[HNil], T] =
-    Predicate.alwaysValid
+  implicit def allOfHNilPredicate[T]: Predicate1[AllOf[HNil], T] =
+    Predicate1.alwaysValid
 
-  implicit def allOfHConsPredicate[PH, PT <: HList, T](implicit ph: Predicate[PH, T], pt: Predicate[AllOf[PT], T]): Predicate[AllOf[PH :: PT], T] =
-    Predicate.instance(
+  implicit def allOfHConsPredicate[PH, PT <: HList, T](implicit ph: Predicate1[PH, T], pt: Predicate1[AllOf[PT], T]): Predicate1[AllOf[PH :: PT], T] =
+    Predicate1.instance(
       t => ph.isValid(t) && pt.isValid(t),
       t => s"(${ph.show(t)} && ${pt.show(t)})")
 
-  implicit def anyOfHNilPredicate[T]: Predicate[AnyOf[HNil], T] =
-    Predicate.alwaysInvalid
+  implicit def anyOfHNilPredicate[T]: Predicate1[AnyOf[HNil], T] =
+    Predicate1.alwaysInvalid
 
-  implicit def anyOfHConsPredicate[PH, PT <: HList, T](implicit ph: Predicate[PH, T], pt: Predicate[AnyOf[PT], T]): Predicate[AnyOf[PH :: PT], T] =
-    Predicate.instance(
+  implicit def anyOfHConsPredicate[PH, PT <: HList, T](implicit ph: Predicate1[PH, T], pt: Predicate1[AnyOf[PT], T]): Predicate1[AnyOf[PH :: PT], T] =
+    Predicate1.instance(
       t => ph.isValid(t) || pt.isValid(t),
       t => s"(${ph.show(t)} || ${pt.show(t)})")
 
-  implicit def oneOfHNilPredicate[T]: Predicate[OneOf[HNil], T] =
-    Predicate.alwaysInvalid
+  implicit def oneOfHNilPredicate[T]: Predicate1[OneOf[HNil], T] =
+    Predicate1.alwaysInvalid
 
-  implicit def oneOfHConsPredicate[PH, PT <: HList, T](implicit ph: Predicate[PH, T], pt: Predicate[OneOf[PT], T]): Predicate[OneOf[PH :: PT], T] =
-    new Predicate[OneOf[PH :: PT], T] {
+  implicit def oneOfHConsPredicate[PH, PT <: HList, T](implicit ph: Predicate1[PH, T], pt: Predicate1[OneOf[PT], T]): Predicate1[OneOf[PH :: PT], T] =
+    new Predicate1[OneOf[PH :: PT], T] {
       def isValid(t: T): Boolean = accumulateIsValid(t).count(identity) == 1
       def show(t: T): String = accumulateShow(t).mkString("oneOf(", ", ", ")")
 

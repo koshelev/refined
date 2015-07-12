@@ -4,17 +4,43 @@ import shapeless.tag.@@
 
 import scala.util.{ Failure, Success, Try }
 
+sealed trait Predicate[P, T] extends Serializable
+
+trait Predicate0[P, T] extends Predicate[P, T] {
+
+  def isValid: Boolean
+
+  def show: String
+}
+
+object Predicate0 {
+
+  def apply[P, T](implicit p: Predicate0[P, T]): Predicate0[P, T] = p
+
+  def instance[P, T](validateT: Boolean, showT: String): Predicate0[P, T] =
+    new Predicate0[P, T] {
+      def isValid: Boolean = validateT
+      def show: String = showT
+    }
+
+  def alwaysValid[P, T]: Predicate0[P, T] =
+    instance(validateT = true, "true")
+
+  def alwaysInvalid[P, T]: Predicate0[P, T] =
+    instance(validateT = false, "false")
+}
+
 /**
  * Type class for validating values of type `T` according to a type-level
  * predicate `P`. The semantics of `P` are defined by the instance(s) of
  * this type class for `P`.
  */
-trait Predicate[P, T] extends Serializable { self =>
+trait Predicate1[P, T] extends Predicate[P, T] { self =>
 
   /** Checks if `t` satisfies the predicate `P`. */
   def isValid(t: T): Boolean
 
-  /** Returns a string representation of this [[Predicate]] using `t`. */
+  /** Returns a string representation of this [[Predicate1]] using `t`. */
   def show(t: T): String
 
   /**
@@ -52,8 +78,8 @@ trait Predicate[P, T] extends Serializable { self =>
   def accumulateShow(t: T): List[String] =
     List(show(t))
 
-  private[refined] def contramap[U](f: U => T): Predicate[P, U] =
-    new Predicate[P, U] {
+  private[refined] def contramap[U](f: U => T): Predicate1[P, U] =
+    new Predicate1[P, U] {
       def isValid(u: U): Boolean = self.isValid(f(u))
       def show(u: U): String = self.show(f(u))
       override def validate(u: U): Option[String] = self.validate(f(u))
@@ -62,23 +88,23 @@ trait Predicate[P, T] extends Serializable { self =>
     }
 }
 
-object Predicate {
+object Predicate1 {
 
-  def apply[P, T](implicit p: Predicate[P, T]): Predicate[P, T] = p
+  def apply[P, T](implicit p: Predicate1[P, T]): Predicate1[P, T] = p
 
-  /** Constructs a [[Predicate]] from its parameters. */
-  def instance[P, T](validateT: T => Boolean, showT: T => String): Predicate[P, T] =
-    new Predicate[P, T] {
+  /** Constructs a [[Predicate1]] from its parameters. */
+  def instance[P, T](validateT: T => Boolean, showT: T => String): Predicate1[P, T] =
+    new Predicate1[P, T] {
       def isValid(t: T): Boolean = validateT(t)
       def show(t: T): String = showT(t)
     }
 
   /**
-   * Constructs a [[Predicate]] from the partial function `pf`. All `T`s for
+   * Constructs a [[Predicate1]] from the partial function `pf`. All `T`s for
    * which `pf` throws an exception are considered invalid according to `P`.
    */
-  def fromPartial[P, T, U](pf: T => U, showT: T => String): Predicate[P, T] =
-    new Predicate[P, T] {
+  def fromPartial[P, T, U](pf: T => U, showT: T => String): Predicate1[P, T] =
+    new Predicate1[P, T] {
       def isValid(t: T): Boolean = Try(pf(t)).isSuccess
       def show(t: T): String = showT(t)
 
@@ -89,11 +115,14 @@ object Predicate {
         }
     }
 
-  /** Returns a [[Predicate]] that ignores its inputs and always yields `true`. */
-  def alwaysValid[P, T]: Predicate[P, T] =
-    instance(_ => true, _ => "true")
+  def fromPredicate0[P, T](p0: Predicate0[P, T]): Predicate1[P, T] =
+    instance(_ => p0.isValid, _ => p0.show)
 
-  /** Returns a [[Predicate]] that ignores its inputs and always yields `false`. */
-  def alwaysInvalid[P, T]: Predicate[P, T] =
-    instance(_ => false, _ => "false")
+  /** Returns a [[Predicate1]] that ignores its inputs and always yields `true`. */
+  def alwaysValid[P, T]: Predicate1[P, T] =
+    fromPredicate0(Predicate0.alwaysValid)
+
+  /** Returns a [[Predicate1]] that ignores its inputs and always yields `false`. */
+  def alwaysInvalid[P, T]: Predicate1[P, T] =
+    fromPredicate0(Predicate0.alwaysInvalid)
 }

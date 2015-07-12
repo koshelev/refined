@@ -8,45 +8,45 @@ import shapeless.test.illTyped
 class GenericPredicateSpec extends Properties("GenericPredicate") {
 
   property("Equal[_].isValid") = secure {
-    Predicate[Equal[W.`1.4`.T], Double].isValid(1.4)
+    Predicate1[Equal[W.`1.4`.T], Double].isValid(1.4)
   }
 
   property("Equal[_].notValid") = secure {
-    Predicate[Equal[W.`1.4`.T], Double].notValid(2.4)
+    Predicate1[Equal[W.`1.4`.T], Double].notValid(2.4)
   }
 
   property("Equal[_].show") = secure {
-    Predicate[Equal[W.`1.4`.T], Double].show(0.4) ?= "(0.4 == 1.4)"
+    Predicate1[Equal[W.`1.4`.T], Double].show(0.4) ?= "(0.4 == 1.4)"
   }
 
   property("Equal[object.type].isValid") = secure {
     object Foo
-    Predicate[Equal[Foo.type], Any].isValid(Foo)
+    Predicate1[Equal[Foo.type], Any].isValid(Foo)
   }
 
   property("Equal[Symbol].isValid") = secure {
-    Predicate[Equal[W.`'foo`.T], Symbol].isValid('foo)
+    Predicate1[Equal[W.`'foo`.T], Symbol].isValid('foo)
   }
 
   property("Equal[Symbol].notValid") = secure {
-    Predicate[Equal[W.`'foo`.T], Symbol].notValid('bar)
+    Predicate1[Equal[W.`'foo`.T], Symbol].notValid('bar)
   }
 
   property("Subtype.isValid") = secure {
-    Predicate[Subtype[AnyVal], Int].isValid(0)
+    Predicate0[Subtype[AnyVal], Int].isValid
   }
 
   property("Subtype.notValid") = secure {
-    illTyped("Predicate[Subtype[Int], AnyVal]", ".*could not find implicit value.*")
+    illTyped("Predicate0[Subtype[Int], AnyVal]", ".*could not find implicit value.*")
     true
   }
 
   property("Supertype.isValid") = secure {
-    Predicate[Supertype[List[Int]], Seq[Int]].isValid(Seq(0))
+    Predicate0[Supertype[List[Int]], Seq[Int]].isValid
   }
 
   property("Supertype.notValid") = secure {
-    illTyped("Predicate[Supertype[Seq[Int]], List[Int]]", ".*could not find implicit value.*")
+    illTyped("Predicate0[Supertype[Seq[Int]], List[Int]]", ".*could not find implicit value.*")
     true
   }
 }

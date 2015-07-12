@@ -79,8 +79,8 @@ object collection extends CollectionPredicates with CollectionInferenceRules {
 
 private[refined] trait CollectionPredicates {
 
-  implicit def countPredicate[PA, PC, A, T](implicit pa: Predicate[PA, A], pc: Predicate[PC, Int], ev: T => TraversableOnce[A]): Predicate[Count[PA, PC], T] =
-    new Predicate[Count[PA, PC], T] {
+  implicit def countPredicate[PA, PC, A, T](implicit pa: Predicate1[PA, A], pc: Predicate1[PC, Int], ev: T => TraversableOnce[A]): Predicate1[Count[PA, PC], T] =
+    new Predicate1[Count[PA, PC], T] {
       def isValid(t: T): Boolean = pc.isValid(count(t))
       def show(t: T): String = pc.show(count(t))
 
@@ -93,34 +93,34 @@ private[refined] trait CollectionPredicates {
       private def count(t: T): Int = t.count(pa.isValid)
     }
 
-  implicit def emptyPredicate[T](implicit ev: T => TraversableOnce[_]): Predicate[Empty, T] =
-    Predicate.instance(_.isEmpty, t => s"isEmpty($t)")
+  implicit def emptyPredicate[T](implicit ev: T => TraversableOnce[_]): Predicate1[Empty, T] =
+    Predicate1.instance(_.isEmpty, t => s"isEmpty($t)")
 
-  implicit def forallPredicate[P, A, T[A] <: TraversableOnce[A]](implicit p: Predicate[P, A]): Predicate[Forall[P], T[A]] =
-    Predicate.instance(
+  implicit def forallPredicate[P, A, T[A] <: TraversableOnce[A]](implicit p: Predicate1[P, A]): Predicate1[Forall[P], T[A]] =
+    Predicate1.instance(
       _.forall(p.isValid),
       _.toSeq.map(p.show).mkString("(", " && ", ")"))
 
-  implicit def forallPredicateView[P, A, T](implicit p: Predicate[P, A], ev: T => TraversableOnce[A]): Predicate[Forall[P], T] =
+  implicit def forallPredicateView[P, A, T](implicit p: Predicate1[P, A], ev: T => TraversableOnce[A]): Predicate1[Forall[P], T] =
     forallPredicate.contramap(ev)
 
-  implicit def headPredicate[P, A, T[A] <: Traversable[A]](implicit p: Predicate[P, A]): Predicate[Head[P], T[A]] =
+  implicit def headPredicate[P, A, T[A] <: Traversable[A]](implicit p: Predicate1[P, A]): Predicate1[Head[P], T[A]] =
     singleElemPredicate(_.headOption, (t: T[A], a: A) => s"head($t) = $a")
 
-  implicit def headPredicateView[P, A, T](implicit p: Predicate[P, A], ev: T => Traversable[A]): Predicate[Head[P], T] =
+  implicit def headPredicateView[P, A, T](implicit p: Predicate1[P, A], ev: T => Traversable[A]): Predicate1[Head[P], T] =
     headPredicate.contramap(ev)
 
-  implicit def indexPredicate[N <: Int, P, A, T](implicit p: Predicate[P, A], ev: T => PartialFunction[Int, A], wn: Witness.Aux[N]): Predicate[Index[N, P], T] =
+  implicit def indexPredicate[N <: Int, P, A, T](implicit p: Predicate1[P, A], ev: T => PartialFunction[Int, A], wn: Witness.Aux[N]): Predicate1[Index[N, P], T] =
     singleElemPredicate(_.lift(wn.value), (t: T, a: A) => s"index($t, ${wn.value}) = $a")
 
-  implicit def lastPredicate[P, A, T[A] <: Traversable[A]](implicit p: Predicate[P, A]): Predicate[Last[P], T[A]] =
+  implicit def lastPredicate[P, A, T[A] <: Traversable[A]](implicit p: Predicate1[P, A]): Predicate1[Last[P], T[A]] =
     singleElemPredicate(_.lastOption, (t: T[A], a: A) => s"last($t) = $a")
 
-  implicit def lastPredicateView[P, A, T](implicit p: Predicate[P, A], ev: T => Traversable[A]): Predicate[Last[P], T] =
+  implicit def lastPredicateView[P, A, T](implicit p: Predicate1[P, A], ev: T => Traversable[A]): Predicate1[Last[P], T] =
     lastPredicate.contramap(ev)
 
-  private def singleElemPredicate[PA, PT, A, T](get: T => Option[A], describe: (T, A) => String)(implicit p: Predicate[PA, A]): Predicate[PT, T] =
-    new Predicate[PT, T] {
+  private def singleElemPredicate[PA, PT, A, T](get: T => Option[A], describe: (T, A) => String)(implicit p: Predicate1[PA, A]): Predicate1[PT, T] =
+    new Predicate1[PT, T] {
       def isValid(t: T): Boolean = get(t).fold(false)(p.isValid)
       def show(t: T): String = get(t).fold("no element")(p.show)
 
@@ -133,8 +133,8 @@ private[refined] trait CollectionPredicates {
         }
     }
 
-  implicit def sizePredicate[P, T](implicit p: Predicate[P, Int], ev: T => TraversableOnce[_]): Predicate[Size[P], T] =
-    new Predicate[Size[P], T] {
+  implicit def sizePredicate[P, T](implicit p: Predicate1[P, Int], ev: T => TraversableOnce[_]): Predicate1[Size[P], T] =
+    new Predicate1[Size[P], T] {
       def isValid(t: T): Boolean = p.isValid(t.size)
       def show(t: T): String = p.show(t.size)
 

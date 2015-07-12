@@ -12,115 +12,115 @@ import shapeless.nat._
 class StringPredicateSpec extends Properties("StringPredicate") {
 
   property("Empty.isValid") = forAll { (s: String) =>
-    Predicate[Empty, String].isValid(s) ?= s.isEmpty
+    Predicate1[Empty, String].isValid(s) ?= s.isEmpty
   }
 
   property("Empty.show") = secure {
-    Predicate[Empty, String].show("test") ?= "isEmpty(test)"
+    Predicate1[Empty, String].show("test") ?= "isEmpty(test)"
   }
 
   property("NonEmpty.isValid") = forAll { (s: String) =>
-    Predicate[NonEmpty, String].isValid(s) ?= s.nonEmpty
+    Predicate1[NonEmpty, String].isValid(s) ?= s.nonEmpty
   }
 
   property("NonEmpty.show") = secure {
-    Predicate[NonEmpty, String].show("test") ?= "!isEmpty(test)"
+    Predicate1[NonEmpty, String].show("test") ?= "!isEmpty(test)"
   }
 
   property("Forall[LowerCase].isValid") = forAll { (s: String) =>
-    Predicate[Forall[LowerCase], String].isValid(s) ?= s.forall(_.isLower)
+    Predicate1[Forall[LowerCase], String].isValid(s) ?= s.forall(_.isLower)
   }
 
   property("Forall[LowerCase].show") = secure {
-    Predicate[Forall[LowerCase], String].show("abc") ?=
+    Predicate1[Forall[LowerCase], String].show("abc") ?=
       "(isLower('a') && isLower('b') && isLower('c'))"
   }
 
   property("Forall[UpperCase].isValid") = forAll { (s: String) =>
-    Predicate[Forall[UpperCase], String].isValid(s) ?= s.forall(_.isUpper)
+    Predicate1[Forall[UpperCase], String].isValid(s) ?= s.forall(_.isUpper)
   }
 
   property("Forall[UpperCase].show") = secure {
-    Predicate[Forall[UpperCase], String].show("abc") ?=
+    Predicate1[Forall[UpperCase], String].show("abc") ?=
       "(isUpper('a') && isUpper('b') && isUpper('c'))"
   }
 
   property("Head[Letter].isValid") = forAll { (s: String) =>
-    Predicate[Head[Letter], String].isValid(s) ?= s.headOption.fold(false)(_.isLetter)
+    Predicate1[Head[Letter], String].isValid(s) ?= s.headOption.fold(false)(_.isLetter)
   }
 
   property("Last[Letter].show") = secure {
-    Predicate[Last[Letter], String].show("abc0") ?= "isLetter('0')"
+    Predicate1[Last[Letter], String].show("abc0") ?= "isLetter('0')"
   }
 
   property("Size.isValid") = forAll { (s: String) =>
-    Predicate[Size[LessEqual[_10]], String].isValid(s) ?= (s.length <= 10)
+    Predicate1[Size[LessEqual[_10]], String].isValid(s) ?= (s.length <= 10)
   }
 
   property("Size.validate") = forAll { (s: String) =>
-    Predicate[Size[LessEqual[_10]], String].validate(s).isEmpty ?= (s.length <= 10)
+    Predicate1[Size[LessEqual[_10]], String].validate(s).isEmpty ?= (s.length <= 10)
   }
 
   property("Size.show") = secure {
     type P = Size[Greater[_5] And LessEqual[_10]]
-    Predicate[P, String].show("test") ?= "((4 > 5) && !(4 > 10))"
+    Predicate1[P, String].show("test") ?= "((4 > 5) && !(4 > 10))"
   }
 
   property("Count[LowerCase, Greater[_2]].isValid") = forAll { (s: String) =>
-    Predicate[Count[LowerCase, Greater[_2]], String].isValid(s) ?= (s.count(_.isLower) > 2)
+    Predicate1[Count[LowerCase, Greater[_2]], String].isValid(s) ?= (s.count(_.isLower) > 2)
   }
 
   property("MinSize[_5].isValid") = forAll { (s: String) =>
-    Predicate[MinSize[_5], String].isValid(s) ?= (s.length >= 5)
+    Predicate1[MinSize[_5], String].isValid(s) ?= (s.length >= 5)
   }
 
   property("MatchesRegex[R].isValid") = forAll { (s: String) =>
-    Predicate[MatchesRegex[W.`".{2,10}"`.T], String].isValid(s) ?= s.matches(".{2,10}")
+    Predicate1[MatchesRegex[W.`".{2,10}"`.T], String].isValid(s) ?= s.matches(".{2,10}")
   }
 
   property("MatchesRegex[R].show") = secure {
-    Predicate[MatchesRegex[W.`".{2,10}"`.T], String].show("Hello") ?=
+    Predicate1[MatchesRegex[W.`".{2,10}"`.T], String].show("Hello") ?=
       """"Hello".matches(".{2,10}")"""
   }
 
   property("EndsWith[S].isValid") = secure {
     val s = "abcd"
-    Predicate[EndsWith[W.`"cd"`.T], String].isValid(s) ?= s.endsWith("cd")
+    Predicate1[EndsWith[W.`"cd"`.T], String].isValid(s) ?= s.endsWith("cd")
   }
 
   property("EndsWith[S].show") = secure {
     val s = "abcd"
-    Predicate[EndsWith[W.`"cd"`.T], String].show(s) ?= """"abcd".endsWith("cd")"""
+    Predicate1[EndsWith[W.`"cd"`.T], String].show(s) ?= """"abcd".endsWith("cd")"""
   }
 
   property("StartsWith[S].isValid") = secure {
     val s = "abcd"
-    Predicate[StartsWith[W.`"ab"`.T], String].isValid(s) ?= s.startsWith("ab")
+    Predicate1[StartsWith[W.`"ab"`.T], String].isValid(s) ?= s.startsWith("ab")
   }
 
   property("StartsWith[S].show") = secure {
     val s = "abcd"
-    Predicate[StartsWith[W.`"ab"`.T], String].show(s) ?= """"abcd".startsWith("ab")"""
+    Predicate1[StartsWith[W.`"ab"`.T], String].show(s) ?= """"abcd".startsWith("ab")"""
   }
 
   property("Regex.isValid") = secure {
-    Predicate[Regex, String].isValid(".*")
+    Predicate1[Regex, String].isValid(".*")
   }
 
   property("Regex.notValid") = secure {
-    Predicate[Regex, String].notValid("(a|b")
+    Predicate1[Regex, String].notValid("(a|b")
   }
 
   property("Regex.show") = secure {
-    Predicate[Regex, String].show("(a|b)") ?= """isValidRegex("(a|b)")"""
+    Predicate1[Regex, String].show("(a|b)") ?= """isValidRegex("(a|b)")"""
   }
 
   property("Regex.validate success") = secure {
-    Predicate[Regex, String].validate("(a|b)") ?= None
+    Predicate1[Regex, String].validate("(a|b)") ?= None
   }
 
   property("Regex.validate failure") = secure {
-    Predicate[Regex, String].validate("(a|b") ?=
+    Predicate1[Regex, String].validate("(a|b") ?=
       Some(
         """Predicate isValidRegex("(a|b") failed: Unclosed group near index 4
           |(a|b
@@ -128,20 +128,20 @@ class StringPredicateSpec extends Properties("StringPredicate") {
   }
 
   property("Uri.validate success") = secure {
-    Predicate[Uri, String].validate("/a/b/c") ?= None
+    Predicate1[Uri, String].validate("/a/b/c") ?= None
   }
 
   property("Uri.validate failure") = secure {
-    Predicate[Uri, String].validate(" /a/b/c") ?=
+    Predicate1[Uri, String].validate(" /a/b/c") ?=
       Some("Predicate isValidUri(\" /a/b/c\") failed: Illegal character in path at index 0:  /a/b/c")
   }
 
   property("Url.validate success") = secure {
-    Predicate[Url, String].validate("http://example.com") ?= None
+    Predicate1[Url, String].validate("http://example.com") ?= None
   }
 
   property("Url.validate failure") = secure {
-    Predicate[Url, String].validate("htp://example.com") ?=
+    Predicate1[Url, String].validate("htp://example.com") ?=
       Some("Predicate isValidUrl(\"htp://example.com\") failed: unknown protocol: htp")
   }
 }

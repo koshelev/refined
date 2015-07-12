@@ -27,23 +27,23 @@ object string extends StringPredicates with StringInferenceRules {
 
 private[refined] trait StringPredicates {
 
-  implicit def endsWithPredicate[R <: String](implicit wr: Witness.Aux[R]): Predicate[EndsWith[R], String] =
-    Predicate.instance(_.endsWith(wr.value), t => s""""$t".endsWith("${wr.value}")""")
+  implicit def endsWithPredicate[R <: String](implicit wr: Witness.Aux[R]): Predicate1[EndsWith[R], String] =
+    Predicate1.instance(_.endsWith(wr.value), t => s""""$t".endsWith("${wr.value}")""")
 
-  implicit def matchesRegexPredicate[R <: String](implicit wr: Witness.Aux[R]): Predicate[MatchesRegex[R], String] =
-    Predicate.instance(_.matches(wr.value), t => s""""$t".matches("${wr.value}")""")
+  implicit def matchesRegexPredicate[R <: String](implicit wr: Witness.Aux[R]): Predicate1[MatchesRegex[R], String] =
+    Predicate1.instance(_.matches(wr.value), t => s""""$t".matches("${wr.value}")""")
 
-  implicit val regexPredicate: Predicate[Regex, String] =
-    Predicate.fromPartial(_.r, t => s"""isValidRegex("$t")""")
+  implicit val regexPredicate: Predicate1[Regex, String] =
+    Predicate1.fromPartial(_.r, t => s"""isValidRegex("$t")""")
 
-  implicit def startsWithPredicate[R <: String](implicit wr: Witness.Aux[R]): Predicate[StartsWith[R], String] =
-    Predicate.instance(_.startsWith(wr.value), t => s""""$t".startsWith("${wr.value}")""")
+  implicit def startsWithPredicate[R <: String](implicit wr: Witness.Aux[R]): Predicate1[StartsWith[R], String] =
+    Predicate1.instance(_.startsWith(wr.value), t => s""""$t".startsWith("${wr.value}")""")
 
-  implicit val uriPredicate: Predicate[Uri, String] =
-    Predicate.fromPartial(new java.net.URI(_), t => s"""isValidUri("$t")""")
+  implicit val uriPredicate: Predicate1[Uri, String] =
+    Predicate1.fromPartial(new java.net.URI(_), t => s"""isValidUri("$t")""")
 
-  implicit val urlPredicate: Predicate[Url, String] =
-    Predicate.fromPartial(new java.net.URL(_), t => s"""isValidUrl("$t")""")
+  implicit val urlPredicate: Predicate1[Url, String] =
+    Predicate1.fromPartial(new java.net.URL(_), t => s"""isValidUrl("$t")""")
 }
 
 private[refined] trait StringInferenceRules {

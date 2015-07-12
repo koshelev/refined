@@ -26,18 +26,18 @@ object char extends CharPredicates {
 
 private[refined] trait CharPredicates {
 
-  implicit val digitPredicate: Predicate[Digit, Char] =
-    Predicate.instance(_.isDigit, t => s"isDigit('$t')")
+  implicit val digitPredicate: Predicate1[Digit, Char] =
+    Predicate1.instance(_.isDigit, t => s"isDigit('$t')")
 
-  implicit val letterPredicate: Predicate[Letter, Char] =
-    Predicate.instance(_.isLetter, t => s"isLetter('$t')")
+  implicit val letterPredicate: Predicate1[Letter, Char] =
+    Predicate1.instance(_.isLetter, t => s"isLetter('$t')")
 
-  implicit val lowerCasePredicate: Predicate[LowerCase, Char] =
-    Predicate.instance(_.isLower, t => s"isLower('$t')")
+  implicit val lowerCasePredicate: Predicate1[LowerCase, Char] =
+    Predicate1.instance(_.isLower, t => s"isLower('$t')")
 
-  implicit val upperCasePredicate: Predicate[UpperCase, Char] =
-    Predicate.instance(_.isUpper, t => s"isUpper('$t')")
+  implicit val upperCasePredicate: Predicate1[UpperCase, Char] =
+    Predicate1.instance(_.isUpper, t => s"isUpper('$t')")
 
-  implicit val whitespacePredicate: Predicate[Whitespace, Char] =
-    Predicate.instance(_.isWhitespace, t => s"isWhitespace('$t')")
+  implicit val whitespacePredicate: Predicate1[Whitespace, Char] =
+    Predicate1.instance(_.isWhitespace, t => s"isWhitespace('$t')")
 }
