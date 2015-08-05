@@ -15,9 +15,10 @@ package object refined {
    * Example: {{{
    * scala> import eu.timepit.refined._
    *      | import eu.timepit.refined.numeric._
+   *      | import cats.data.Xor
    *
    * scala> refineV[Positive](10)
-   * res1: Either[String, Refined[Int, Positive]] = Right(Refined(10))
+   * res1: Xor[String, Refined[Int, Positive]] = Right(Refined(10))
    * }}}
    *
    * Note: `V` stands for '''v'''alue class.
@@ -36,9 +37,10 @@ package object refined {
    * scala> import eu.timepit.refined._
    *      | import eu.timepit.refined.numeric._
    *      | import shapeless.tag.@@
+   *      | import cats.data.Xor
    *
    * scala> refineT[Positive](10)
-   * res1: Either[String, Int @@ Positive] = Right(10)
+   * res1: Xor[String, Int @@ Positive] = Right(10)
    * }}}
    *
    * Note: `T` stands for '''t'''ag.

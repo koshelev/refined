@@ -1,5 +1,6 @@
 package eu.timepit.refined
 
+import cats.data.Xor
 import eu.timepit.refined.implicits._
 import eu.timepit.refined.numeric.Positive
 import org.scalacheck.Prop._
@@ -9,8 +10,8 @@ import shapeless.test.illTyped
 
 class RefineSyntaxSpec extends Properties("refine syntax") {
 
-  def testRefineV(arg: Either[String, Int Refined Positive]): Boolean = true
-  def testRefineT(arg: Either[String, Int @@ Positive]): Boolean = true
+  def testRefineV(arg: Xor[String, Int Refined Positive]): Boolean = true
+  def testRefineT(arg: Xor[String, Int @@ Positive]): Boolean = true
   def testRefineMV(arg: Int Refined Positive): Boolean = true
   def testRefineMT(arg: Int @@ Positive): Boolean = true
 
